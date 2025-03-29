@@ -19,7 +19,7 @@ class farmland {
   void progress() {
     if (is_tilled == false) {
       img = loadImage("data/Images/untilled_land.png");
-    } else if (is_tilled == true) {
+    } else if (is_tilled == true && is_watered == false) {
       img = loadImage("data/Images/tilled_land.png");
     } else if (is_tilled == true && is_watered == true) {
       img = loadImage("data/Images/watered_land.png");
