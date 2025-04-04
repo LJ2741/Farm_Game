@@ -1,7 +1,6 @@
 class Hoe extends Tools {
   
-  
-  
+
   Hoe(int x,int y) {
     super();
     pos = new PVector(x,y);
