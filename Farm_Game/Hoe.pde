@@ -1,4 +1,4 @@
-class Hoe extends Tools {
+class Hoe extends Dragable {
   
 
   Hoe(int x,int y) {

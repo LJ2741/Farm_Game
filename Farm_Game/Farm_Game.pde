@@ -4,10 +4,7 @@ boolean dragging = false;
 Collision col = new Collision();
 farmland[][] land;
 Grass[][] grass;
-Hoe hoe;
-WaterCan water;
-Seeds seeds;
-Knife knife;
+ArrayList<Dragable> drables = new ArrayList<Dragable>();
 ArrayList<Fruit> fruits = new ArrayList<Fruit>();
 
 void setup() {
@@ -17,19 +14,21 @@ void setup() {
   land = new farmland[6][4];
   grass = new Grass[7][4];
   spawnTiles();
-  hoe = new Hoe(700,700);
-  water = new WaterCan(700,750);
-  seeds = new Seeds(700,650);
-  knife = new Knife(700,600);
+  drables.add(new Hoe(500,700));
+  drables.add(new WaterCan(600,700));
+  drables.add(new Seeds(500,700));
+  drables.add(new Knife(400,700));
+  fruits.add(new Fruit(-1000,-1000));
 }
 
 
 void draw() {
+  imageMode(CENTER);
   background(0);
   for (int y = 0; y < 4; y++) {
   for (int i = 0; i < land.length; i++) {
       land[i][y].display();
-      Collisions(hoe,water,seeds,knife,land[i][y]);
+      Collisions(drables.get(0),drables.get(1),drables.get(2),drables.get(3),land[i][y]);
   }
   }
   
@@ -40,10 +39,13 @@ void draw() {
   }
   }
   
-  hoe.display();
-  water.display();
-  seeds.display();
-  knife.display();
+  for (int i = 0; i < fruits.size(); i++) {
+    fruits.get(i).display();
+  }
+  
+  for (int i = 0; i < drables.size(); i++) {
+    drables.get(i).display();
+  }
 
 }
   
@@ -51,32 +53,47 @@ void draw() {
   
 void mouseClicked() {
   if (dragging == false) {
-    dragCollisions(hoe);
-    dragCollisions(water);
-    dragCollisions(seeds);
-    dragCollisions(knife);
+    
+    dragCollisions(drables.get(0));
+    dragCollisions(drables.get(1));
+    dragCollisions(drables.get(2));
+    dragCollisions(drables.get(3));
   } else {
+    
     dragging = false;
-    hoe.drag = false;
-    water.drag = false;
-    seeds.drag = false;
-    knife.drag = false;
-    
-    
-    
+    drables.get(0).drag = false;
+    drables.get(1).drag = false;
+    drables.get(2).drag = false;
+    drables.get(3).drag = false;
+     
+    for (int i = 0; i < fruits.size(); i++ ) {
+      Fruit f = fruits.get(i);
+      f.drag = false;
+    }
   }
-  
-}
-
     
-void dragCollisions(Tools t) {
-  if (col.coll(mouseX,mouseY,t.pos.x,t.pos.y,80) && dragging == false) {
+    
+}
+  
+   
+void dragCollisions(Dragable d) {
+  Fruit f = fruits.get(0);
+  for (int i = 0; i < fruits.size(); i++) {
+    f = fruits.get(i);
+  
+    if (col.coll(mouseX,mouseY,f.pos.x,f.pos.y,50) && dragging == false) {
       dragging = true;
-      t.drag = true;
+      f.drag = true;
+    } else if (col.coll(mouseX,mouseY,d.pos.x,d.pos.y,50) && dragging == false) {
+      dragging = true;
+      d.drag = true;
+      
+    }
   }
+  
 }
   
-void Collisions(Hoe h,WaterCan w,Seeds s,Knife k,farmland l) {
+void Collisions(Dragable h,Dragable w,Dragable s,Dragable k,farmland l) {
   
   if (col.coll(h.pos.x,h.pos.y,l.pos.x,l.pos.y,25) && l.is_tilled == false && l.is_watered == false && l.has_fruit == false) {
     l.is_tilled = true;
@@ -91,7 +108,8 @@ void Collisions(Hoe h,WaterCan w,Seeds s,Knife k,farmland l) {
   }
   
   if (col.coll(k.pos.x,k.pos.y,l.pos.x,l.pos.y,25) && l.is_tilled == true && l.is_watered == true && l.has_seeds == true && l.has_fruit == true) {
-    l.has_seeds = true;
+    l.harvest = true;
+    addFruit(l);
   }
   
   
@@ -111,4 +129,11 @@ void spawnTiles() {
   }
   }
   
+}
+
+
+
+void addFruit(farmland l) {
+  fruits.add(new Fruit(l.pos.x - 25,l.pos.y - 25));
+  fruits.add(new Fruit(l.pos.x + 25,l.pos.y + 25));
 }

@@ -1,4 +1,4 @@
-class Knife extends Tools {
+class Knife extends Dragable {
   
 
   Knife(int x,int y) {

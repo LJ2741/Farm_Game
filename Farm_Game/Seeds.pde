@@ -1,4 +1,4 @@
-class Seeds extends Tools {
+class Seeds extends Dragable {
   
   
   String name = "Seeds";

@@ -1,4 +1,4 @@
-class WaterCan extends Tools {
+class WaterCan extends Dragable {
   
   
   WaterCan(int x,int y) {

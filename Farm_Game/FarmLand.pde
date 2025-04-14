@@ -2,7 +2,7 @@ class farmland {
   
   
   PVector pos;
-  Boolean is_tilled = false,is_watered = false,has_seeds = false,has_fruit = false,can_timer = true;
+  Boolean is_tilled = false,is_watered = false,has_seeds = false,has_fruit = false,harvest = false,can_timer = true;
   PImage img;
   int savedTime,totalTime,passedTime;
   farmland(float x,float y) {
@@ -27,9 +27,12 @@ class farmland {
     } else if (has_seeds == true && is_tilled == true && is_watered == true && has_fruit == false) {
       img = loadImage("data/Images/seeded_land.png");
       can_timer = false;
-    } else if (has_fruit == true) {
+    } else if (has_fruit == true && harvest == false) {
       img = loadImage("data/Images/fruit_land.png");
-    }
+    } else if (has_fruit == true && harvest == true) {
+      reset();
+      }
+    
   }
   
   void bearFruit() {
@@ -43,5 +46,13 @@ class farmland {
         can_timer = true;
       }
     }
+  }
+  
+  void reset() {
+    is_tilled = false;
+    is_watered = false;
+    has_seeds = false;
+    has_fruit = false;
+    harvest = false;
   }
 }

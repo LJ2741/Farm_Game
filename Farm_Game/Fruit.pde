@@ -1,10 +1,11 @@
-class Fruit {
+class Fruit extends Dragable {
 
   boolean drag;
   PVector pos;
   PImage img;
   String name;
-  Fruit(int x,int y) {
+  Fruit(float x,float y) {
+    super();
     img = loadImage("data/Images/fruit.png");
     pos = new PVector(x,y);
     drag = false;
@@ -14,10 +15,11 @@ class Fruit {
     image(img,pos.x,pos.y);
     dragging();
   }
-    
+  
   void dragging() {
     if (drag == true) {
       pos = new PVector(mouseX,mouseY);
     }
   }
+    
 }

@@ -1,9 +1,9 @@
-class Tools {
+class Dragable {
   
   boolean drag;
   PVector pos;
   PImage img;
-  Tools() {
+  Dragable() {
     pos = new PVector(700,700);
     drag = false;
   }
