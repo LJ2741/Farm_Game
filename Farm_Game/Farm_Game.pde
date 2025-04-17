@@ -1,24 +1,30 @@
 
 int gold = 0;
+IntList costs = new IntList();
 boolean dragging = false;
 Collision col = new Collision();
 farmland[][] land;
 Grass[][] grass;
+Button[] buttons = new Button[3];
 Basket basket;
 ArrayList<Dragable> drables = new ArrayList<Dragable>();
 ArrayList<Fruit> fruits = new ArrayList<Fruit>();
 
 void setup() {
   imageMode(CENTER);
+  rectMode(CENTER);
   textSize(50);
   textAlign(LEFT);
   size(800,800);
   background(0);
   land = new farmland[6][4];
   grass = new Grass[7][4];
-  basket = new Basket(50,650);
+  basket = new Basket(60,650);
+  costs.set(0,10);
+  costs.set(1,30);
+  costs.set(2,50);
   spawnTiles();
-  drables.add(new Hoe(500,700));
+  drables.add(new Hoe(500,625));
   drables.add(new WaterCan(600,700));
   drables.add(new Seeds(500,700));
   drables.add(new Knife(400,700));
@@ -44,8 +50,11 @@ void draw() {
   }
   }
   
-  displayTexts();
   basket.display();
+  
+  for (int i = 0; i < buttons.length; i++) {
+    buttons[i].display();
+  }
   
   for (int i = 0; i < fruits.size(); i++) {
     fruits.get(i).display();
@@ -56,11 +65,13 @@ void draw() {
   }
   
   gameOver();
+  displayTexts();
 }
   
 
   
 void mouseClicked() {
+  buttonInputs();
   if (dragging == false) {
     
     dragCollisions(drables.get(0));
@@ -127,12 +138,32 @@ void Collisions(Dragable h,Dragable w,Dragable s,Dragable k,farmland l) {
       fruits.remove(f);
       basket.capacity += 1;
     }
-  }
-  
-  
+  }  
     
 }
-  
+
+
+void buttonInputs() {
+  for (int i = 0; i < buttons.length; i++) {
+    Button b = buttons[i];
+    if (col.coll(mouseX,mouseY,b.pos.x,b.pos.y,30)) {
+      b.a = 150;
+      if (b.idx == 0 && gold >= b.cost && basket.totalTimeSell > 1000) {
+        gold -= b.cost;
+        b.cost *= 2;
+        basket.totalTimeSell -= 1000;
+      } else if (b.idx == 1 && gold >= b.cost) {
+        gold -= b.cost;
+        b.cost *= 2;
+        basket.max_capacity += 5;
+      } else if (b.idx == 2 && gold >= b.cost) {
+        gold -= b.cost;
+        b.cost *= 2;
+        basket.gold_increase += 10;
+      }
+    }
+  }
+}
 void spawnTiles() {
   for (int y = 0; y < 4; y++) {
   for (int i = 0; i < land.length; i++) {
@@ -146,6 +177,11 @@ void spawnTiles() {
   }
   }
   
+  int e = -1;
+  for (int i = 0; i < buttons.length; i++) {
+    e += 1;
+    buttons[i] = new Button(i * 210 + 200,height - 30,e,costs.get(i));
+  }
 }
 
 void addFruit(farmland l) {
@@ -154,15 +190,23 @@ void addFruit(farmland l) {
 }
 
 void displayTexts() {
+  fill(255);
+  textSize(50);
   textAlign(LEFT);
-  text("Gold: " + gold,10,50);
+  text("Gold: " + gold,15,50);
   textAlign(RIGHT);
-  text("Bills: " + basket.bills,width - 10,50);
+  text("Bills: " + basket.bills + " (" + basket.billsTimer + ")",width - 10,50);
+  textSize(20);
+  buttons[0].displayText("Sell Faster");
+  buttons[1].displayText("Increase Capacity");
+  buttons[2].displayText("Increase Price");
 }
 
 void gameOver() {
   if (gold < 0) {
+    textSize(50);
     textAlign(CENTER);
+    fill(255);
     text("GAME OVER",width/2,height/2);
   }
 }

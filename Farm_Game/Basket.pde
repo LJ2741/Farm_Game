@@ -3,11 +3,13 @@ class Basket {
   
   PVector pos;
   PImage img;
-  int max_capacity,capacity,savedTimeSell,totalTimeSell,savedTimeGM,totalTimeGM,bills;
+  int gold_increase,max_capacity,capacity,savedTimeSell,totalTimeSell,savedTimeGM,totalTimeGM,billsTimer,bills;
   Basket(int x,int y) {
     pos = new PVector(x,y);
     img = loadImage("data/Images/basket.png");
+    gold_increase = 10;
     max_capacity = 5;
+    bills = 30;
     capacity = 0;
     savedTimeSell = millis();
     totalTimeSell = 10000;
@@ -25,6 +27,8 @@ class Basket {
   }
   
   void texts() {
+    fill(255);
+    textSize(45);
     textAlign(LEFT);
     text(capacity + "/" + max_capacity,pos.x - 30,pos.y - 70);
   }
@@ -34,7 +38,7 @@ class Basket {
       int passedTimeS = millis() - savedTimeSell;
       if (passedTimeS > totalTimeSell) {
         capacity -= 1;
-        gold += 10;
+        gold += gold_increase;
       }
     } else {
       savedTimeSell = millis();
@@ -43,10 +47,11 @@ class Basket {
   
   void goldTimer() {
     int passedTimeG = millis() - savedTimeGM;
-    bills = ((totalTimeGM - passedTimeG)/1000);
+    billsTimer = ((totalTimeGM - passedTimeG)/1000);
     if (passedTimeG > totalTimeGM) {
       savedTimeGM = millis();
-      gold -= 30;
+      gold -= bills;
+      bills += 10;
     }
   }
      
