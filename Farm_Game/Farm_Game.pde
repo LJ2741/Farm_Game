@@ -1,18 +1,22 @@
 
-
+int gold = 0;
 boolean dragging = false;
 Collision col = new Collision();
 farmland[][] land;
 Grass[][] grass;
+Basket basket;
 ArrayList<Dragable> drables = new ArrayList<Dragable>();
 ArrayList<Fruit> fruits = new ArrayList<Fruit>();
 
 void setup() {
   imageMode(CENTER);
+  textSize(50);
+  textAlign(LEFT);
   size(800,800);
   background(0);
   land = new farmland[6][4];
   grass = new Grass[7][4];
+  basket = new Basket(50,650);
   spawnTiles();
   drables.add(new Hoe(500,700));
   drables.add(new WaterCan(600,700));
@@ -25,6 +29,7 @@ void setup() {
 void draw() {
   imageMode(CENTER);
   background(0);
+  
   for (int y = 0; y < 4; y++) {
   for (int i = 0; i < land.length; i++) {
       land[i][y].display();
@@ -39,6 +44,9 @@ void draw() {
   }
   }
   
+  displayTexts();
+  basket.display();
+  
   for (int i = 0; i < fruits.size(); i++) {
     fruits.get(i).display();
   }
@@ -46,7 +54,8 @@ void draw() {
   for (int i = 0; i < drables.size(); i++) {
     drables.get(i).display();
   }
-
+  
+  gameOver();
 }
   
 
@@ -81,7 +90,7 @@ void dragCollisions(Dragable d) {
   for (int i = 0; i < fruits.size(); i++) {
     f = fruits.get(i);
   
-    if (col.coll(mouseX,mouseY,f.pos.x,f.pos.y,50) && dragging == false) {
+    if (col.coll(mouseX,mouseY,f.pos.x,f.pos.y,50)) {
       dragging = true;
       f.drag = true;
     } else if (col.coll(mouseX,mouseY,d.pos.x,d.pos.y,50) && dragging == false) {
@@ -95,21 +104,29 @@ void dragCollisions(Dragable d) {
   
 void Collisions(Dragable h,Dragable w,Dragable s,Dragable k,farmland l) {
   
-  if (col.coll(h.pos.x,h.pos.y,l.pos.x,l.pos.y,25) && l.is_tilled == false && l.is_watered == false && l.has_fruit == false) {
-    l.is_tilled = true;
+  if (col.coll(h.pos.x,h.pos.y,l.pos.x,l.pos.y,25) && l.age == 0 && h.drag == true) {
+    l.age = 1;
   }
   
-  if (col.coll(w.pos.x,w.pos.y,l.pos.x,l.pos.y,25) && l.is_tilled == true && l.is_watered == false && l.has_fruit == false) {
-    l.is_watered = true;
+  if (col.coll(w.pos.x,w.pos.y,l.pos.x,l.pos.y,25) && l.age == 1 && w.drag == true) {
+    l.age = 2;
   }
   
-  if (col.coll(s.pos.x,s.pos.y,l.pos.x,l.pos.y,25) && l.is_tilled == true && l.is_watered == true && l.has_seeds == false && l.has_fruit == false) {
-    l.has_seeds = true;
+  if (col.coll(s.pos.x,s.pos.y,l.pos.x,l.pos.y,25) && l.age == 2 && s.drag == true) {
+    l.age = 3;
   }
   
-  if (col.coll(k.pos.x,k.pos.y,l.pos.x,l.pos.y,25) && l.is_tilled == true && l.is_watered == true && l.has_seeds == true && l.has_fruit == true) {
-    l.harvest = true;
+  if (col.coll(k.pos.x,k.pos.y,l.pos.x,l.pos.y,25) && l.age == 4 && k.drag == true) {
+    l.age = 0;
     addFruit(l);
+  }
+  
+  for (int i = 0; i < fruits.size(); i++) {
+    Fruit f = fruits.get(i);
+    if (col.coll(f.pos.x,f.pos.y,basket.pos.x,basket.pos.y,30) && (basket.capacity < basket.max_capacity)) {
+      fruits.remove(f);
+      basket.capacity += 1;
+    }
   }
   
   
@@ -131,9 +148,21 @@ void spawnTiles() {
   
 }
 
-
-
 void addFruit(farmland l) {
   fruits.add(new Fruit(l.pos.x - 25,l.pos.y - 25));
   fruits.add(new Fruit(l.pos.x + 25,l.pos.y + 25));
+}
+
+void displayTexts() {
+  textAlign(LEFT);
+  text("Gold: " + gold,10,50);
+  textAlign(RIGHT);
+  text("Bills: " + basket.bills,width - 10,50);
+}
+
+void gameOver() {
+  if (gold < 0) {
+    textAlign(CENTER);
+    text("GAME OVER",width/2,height/2);
+  }
 }
