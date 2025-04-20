@@ -1,7 +1,7 @@
 
 int gold = 0;
 IntList costs = new IntList();
-boolean dragging = false;
+boolean dragging = false,drag_fruit = false;
 Collision col = new Collision();
 farmland[][] land;
 Grass[][] grass;
@@ -78,18 +78,14 @@ void mouseClicked() {
     dragCollisions(drables.get(1));
     dragCollisions(drables.get(2));
     dragCollisions(drables.get(3));
-  } else {
+  } else if (!col.coll(mouseX,mouseY,basket.pos.x,basket.pos.y,75)) {
     
     dragging = false;
+    drag_fruit = false;
     drables.get(0).drag = false;
     drables.get(1).drag = false;
     drables.get(2).drag = false;
     drables.get(3).drag = false;
-     
-    for (int i = 0; i < fruits.size(); i++ ) {
-      Fruit f = fruits.get(i);
-      f.drag = false;
-    }
   }
     
     
@@ -101,13 +97,12 @@ void dragCollisions(Dragable d) {
   for (int i = 0; i < fruits.size(); i++) {
     f = fruits.get(i);
   
-    if (col.coll(mouseX,mouseY,f.pos.x,f.pos.y,50)) {
+    if (col.coll(mouseX,mouseY,f.pos.x,f.pos.y,50) && drag_fruit == false && dragging == false) {
+      drag_fruit = true;
       dragging = true;
-      f.drag = true;
     } else if (col.coll(mouseX,mouseY,d.pos.x,d.pos.y,50) && dragging == false) {
       dragging = true;
       d.drag = true;
-      
     }
   }
   
@@ -138,6 +133,12 @@ void Collisions(Dragable h,Dragable w,Dragable s,Dragable k,farmland l) {
       fruits.remove(f);
       basket.capacity += 1;
     }
+    
+    if (col.coll(mouseX,mouseY,f.pos.x,f.pos.y,50) && drag_fruit == true && dragging == true){
+      f.drag = true;
+    } else {
+      f.drag = false;
+    }
   }  
     
 }
@@ -148,15 +149,15 @@ void buttonInputs() {
     Button b = buttons[i];
     if (col.coll(mouseX,mouseY,b.pos.x,b.pos.y,30)) {
       b.a = 150;
-      if (b.idx == 0 && gold >= b.cost && basket.totalTimeSell > 1000) {
+      if (b.idx == 0 && gold >= b.cost && basket.totalTimeSell > 1000) { // decreases how long it takes to sell
         gold -= b.cost;
         b.cost *= 2;
         basket.totalTimeSell -= 1000;
-      } else if (b.idx == 1 && gold >= b.cost) {
+      } else if (b.idx == 1 && gold >= b.cost) { // increases max capacity
         gold -= b.cost;
         b.cost *= 2;
         basket.max_capacity += 5;
-      } else if (b.idx == 2 && gold >= b.cost) {
+      } else if (b.idx == 2 && gold >= b.cost) { // increaes the price of fruit
         gold -= b.cost;
         b.cost *= 2;
         basket.gold_increase += 10;
@@ -200,10 +201,25 @@ void displayTexts() {
   buttons[0].displayText("Sell Faster");
   buttons[1].displayText("Increase Capacity");
   buttons[2].displayText("Increase Price");
+  textSize(30);
+  countFruit();
 }
 
+void countFruit() {
+  if (fruits.size() - 1 != 0 && drag_fruit == true) {
+    ArrayList amount = new ArrayList<Fruit>();
+    for (int i = 0; i < fruits.size(); i++) {
+      if (fruits.get(i).drag == true) {
+        amount.add(fruits.get(i));
+      }
+    }
+    text(amount.size(),mouseX,mouseY - 30);
+  }
+  
+}
 void gameOver() {
   if (gold < 0) {
+    gold = 0;
     textSize(50);
     textAlign(CENTER);
     fill(255);
