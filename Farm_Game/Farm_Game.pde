@@ -129,14 +129,14 @@ void Collisions(Dragable h,Dragable w,Dragable s,Dragable k,farmland l) {
   
   for (int i = 0; i < fruits.size(); i++) {
     Fruit f = fruits.get(i);
-    if (col.coll(f.pos.x,f.pos.y,basket.pos.x,basket.pos.y,30) && (basket.capacity < basket.max_capacity)) {
+    if (col.coll(f.pos.x,f.pos.y,basket.pos.x,basket.pos.y,30) && (basket.capacity < basket.max_capacity) && basket.can_store == true) {
       fruits.remove(f);
       basket.capacity += 1;
     }
     
     if (col.coll(mouseX,mouseY,f.pos.x,f.pos.y,50) && drag_fruit == true && dragging == true){
       f.drag = true;
-    } else {
+    } else if (drag_fruit == false && dragging == false) {
       f.drag = false;
     }
   }  
@@ -213,7 +213,13 @@ void countFruit() {
         amount.add(fruits.get(i));
       }
     }
-    text(amount.size(),mouseX,mouseY - 30);
+    
+    if (amount.size() == 0) {
+      drag_fruit = false;
+      dragging = false;
+    } else {
+      text(amount.size(),mouseX,mouseY - 30);
+    }
   }
   
 }

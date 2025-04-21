@@ -3,6 +3,7 @@ class Basket {
   
   PVector pos;
   PImage img;
+  boolean can_store;
   int gold_increase,max_capacity,capacity,savedTimeSell,totalTimeSell,savedTimeGM,totalTimeGM,billsTimer,bills;
   Basket(int x,int y) {
     pos = new PVector(x,y);
@@ -15,6 +16,7 @@ class Basket {
     totalTimeSell = 10000;
     savedTimeGM = millis();
     totalTimeGM = 60000;
+    can_store = true;
   }
   
   
@@ -29,18 +31,20 @@ class Basket {
   void texts() {
     fill(255);
     textSize(45);
-    textAlign(LEFT);
-    text(capacity + "/" + max_capacity,pos.x - 30,pos.y - 70);
+    textAlign(CENTER);
+    text(capacity + "/" + max_capacity,pos.x,pos.y - 70);
   }
   
   void selling() {
     if (capacity > 0) {
       int passedTimeS = millis() - savedTimeSell;
       if (passedTimeS > totalTimeSell) {
+        can_store = false;
         capacity -= 1;
         gold += gold_increase;
       }
     } else {
+      can_store = true;
       savedTimeSell = millis();
     }
   }
